@@ -50,10 +50,26 @@ fn default_mode(events: &Events, app: &mut App, terminal: &mut Term) -> Result<(
                     current_file.cursor.up();
                 }
             }
+            Key::PageUp => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    let filesize = current_file.data.len();
+                    for _bulk_action in 0..34 {
+                        current_file.cursor.up();
+                    }
+                }
+            }
             Key::Down | Key::Char('j') => {
                 if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
                     let filesize = current_file.data.len();
                     current_file.cursor.down(filesize);
+                }
+            }
+            Key::PageDown => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    let filesize = current_file.data.len();
+                    for _bulk_action in 0..34 {
+                        current_file.cursor.down(filesize);
+                    }
                 }
             }
             Key::Left | Key::Char('h') => {
@@ -65,6 +81,24 @@ fn default_mode(events: &Events, app: &mut App, terminal: &mut Term) -> Result<(
                 if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
                     let filesize = current_file.data.len();
                     current_file.cursor.right(filesize);
+                }
+            }
+            Key::Char('w') => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    let filesize = current_file.data.len();
+                    current_file.cursor.next_word(filesize);
+                }
+            }
+            Key::Char('b') => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    current_file.cursor.prev_word();
+                }
+            }
+            Key::Char('G') => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    current_file
+                        .cursor
+                        .goto(current_file.data.len().saturating_sub(1));
                 }
             }
             _ => {}
@@ -134,6 +168,22 @@ fn write_mode(events: &Events, app: &mut App, terminal: &mut Term) -> Result<(),
                 if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
                     let filesize = current_file.data.len();
                     current_file.cursor.right(filesize);
+                }
+            }
+            Key::PageUp => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    let filesize = current_file.data.len();
+                    for _bulk_action in 0..34 {
+                        current_file.cursor.up();
+                    }
+                }
+            }
+            Key::PageDown => {
+                if let Tab::File(current_file) = &mut app.tabs[app.tabs_index] {
+                    let filesize = current_file.data.len();
+                    for _bulk_action in 0..34 {
+                        current_file.cursor.down(filesize);
+                    }
                 }
             }
             Key::Char(c) => {

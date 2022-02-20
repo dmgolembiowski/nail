@@ -53,6 +53,8 @@ impl Iterator for SinSignal {
     }
 }
 
+const WORD_LEN: usize = 4;
+
 pub struct HexCursor {
     pub pos: (usize, usize),
 }
@@ -99,6 +101,30 @@ impl HexCursor {
         } else {
             self.pos.0 += 1;
         }
+    }
+
+    pub fn next_word(&mut self, filesize: usize) {
+        const WORD_LEN: usize = 4;
+
+        let new_loc = (self.loc() + WORD_LEN) & !(WORD_LEN - 1);
+        let new_loc = usize::min(new_loc, filesize - 1);
+
+        let y = new_loc / 0x10;
+        let x = (new_loc % 0x10) * 2;
+
+        self.pos = (x, y);
+    }
+
+    pub fn prev_word(&mut self) {
+        let new_loc = match self.loc() {
+            loc if loc % WORD_LEN == 0 => loc.saturating_sub(WORD_LEN),
+            loc => loc & !(WORD_LEN - 1),
+        };
+
+        let y = new_loc / 0x10;
+        let x = (new_loc % 0x10) * 2;
+
+        self.pos = (x, y);
     }
 
     pub fn goto(&mut self, loc: usize) {
